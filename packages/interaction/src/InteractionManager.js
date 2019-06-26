@@ -1019,11 +1019,10 @@ export default class InteractionManager extends EventEmitter
         let hit = false;
         let interactiveParent = interactive;
 
-        // Flag here can set to false if the event is outside the parents hitArea or mask
-        let hitTestChildren = true;
-
-        // If there is a hitArea, no need to test against anything else if the pointer is not within the hitArea
+        // If there is a hitArea, no need to test against anything else if the pointer is not within the hitArea.
         // There is also no longer a need to hitTest children.
+        // We still want to process its children, however, to ensure a mouseout can still be generated.
+        // https://github.com/pixijs/pixi.js/issues/5135
         if (displayObject.hitArea)
         {
             if (hitTest)
@@ -1032,7 +1031,6 @@ export default class InteractionManager extends EventEmitter
                 if (!displayObject.hitArea.contains(this._tempPoint.x, this._tempPoint.y))
                 {
                     hitTest = false;
-                    hitTestChildren = false;
                 }
                 else
                 {
@@ -1042,8 +1040,6 @@ export default class InteractionManager extends EventEmitter
             interactiveParent = false;
         }
         // If there is a mask, no need to hitTest against anything else if the pointer is not within the mask.
-        // We still want to hitTestChildren, however, to ensure a mouseout can still be generated.
-        // https://github.com/pixijs/pixi.js/issues/5135
         else if (displayObject._mask)
         {
             if (hitTest)
@@ -1058,7 +1054,7 @@ export default class InteractionManager extends EventEmitter
         // ** FREE TIP **! If an object is not interactive or has no buttons in it
         // (such as a game scene!) set interactiveChildren to false for that displayObject.
         // This will allow PixiJS to completely ignore and bypass checking the displayObjects children.
-        if (hitTestChildren && displayObject.interactiveChildren && displayObject.children)
+        if (displayObject.interactiveChildren && displayObject.children)
         {
             const children = displayObject.children;
 

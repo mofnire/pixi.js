@@ -1518,6 +1518,49 @@ describe('PIXI.interaction.InteractionManager', function ()
 
             expect(spy).to.have.not.been.calledOnce;
         });
+
+        it('should trigger mouseover callback on child of parents with hitArea', function ()
+        {
+            const stage = new Container();
+            const parent = new Container();
+            const pointer = new MockPointer(stage);
+            const graphics = new Graphics();
+            const spy = sinon.spy();
+
+            graphics.interactive = true;
+            graphics.beginFill(0xFF0000);
+            graphics.drawRect(0, 0, 50, 50);
+            graphics.on('mouseover', spy);
+            stage.addChild(parent);
+            parent.addChild(graphics);
+            parent.hitArea = new Rectangle(0, 0, 50, 50);
+
+            pointer.mousemove(10, 10);
+
+            expect(spy).to.have.been.called;
+        });
+
+        it('should trigger mouseout callback on child of parents with hitArea', function ()
+        {
+            const stage = new Container();
+            const parent = new Container();
+            const pointer = new MockPointer(stage);
+            const graphics = new Graphics();
+            const spy = sinon.spy();
+
+            graphics.interactive = true;
+            graphics.beginFill(0xFF0000);
+            graphics.drawRect(0, 0, 50, 50);
+            graphics.on('mouseout', spy);
+            stage.addChild(parent);
+            parent.addChild(graphics);
+            parent.hitArea = new Rectangle(0, 0, 50, 50);
+
+            pointer.mousemove(10, 10);
+            pointer.mousemove(60, 60);
+
+            expect(spy).to.have.been.called;
+        });
     });
 
     describe('cursor changes', function ()
